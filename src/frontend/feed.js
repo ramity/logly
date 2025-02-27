@@ -47,7 +47,7 @@ window.onunhandledrejection = function(event) {
 function feed(event)
 {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://logly_backend:8000/injest', true);
+    xhr.open('POST', 'https://192.168.1.4:8000/ingest', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onload = function() {
         if (xhr.status >= 200 && xhr.status < 300) {
