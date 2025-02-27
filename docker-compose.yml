@@ -13,6 +13,8 @@ services:
       - 443:443
     volumes:
       - ./src/backend:/logly
+      # Add the frontend as an example repo to fix
+      - ./src/frontend:/example
     networks:
       - logly
 

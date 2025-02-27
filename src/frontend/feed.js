@@ -37,7 +37,7 @@ window.onunhandledrejection = function(event) {
     console.log("Unhandled Promise Rejection: ", event.reason);
 
     var event = {
-        "error_type": "resource",
+        "error_type": "promise",
         "reason": event.reason
     };
     feed(event);
@@ -61,4 +61,3 @@ function feed(event)
     };
     xhr.send(JSON.stringify(event))
 }
-
