@@ -8,7 +8,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-use GitWrapper\GitWrapper;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 
@@ -138,13 +139,36 @@ final class IngestController extends AbstractController
                 $new_source_code = $llm_response_data['response'];
                 file_put_contents($file_path, $new_source_code);
 
-                // $branch_name = time();
+                $branch_name = time();
                 // $gitWrapper = new GitWrapper();
                 // $git = $gitWrapper->workingCopy($repo_directory);
                 // $git->branch($branch_name);
                 // $git->add($file_path);
                 // $git->commit("Resolves $error on $file_path");
                 // $git->push();
+
+                $process = new Process("cd $repo_directory && git branch $branch_name");
+                $process->run();
+                if (!$process->isSuccessful()) {
+                    throw new ProcessFailedException($process);
+                }
+                $process = new Process("cd $repo_directory && git add $file_path");
+                $process->run();
+                if (!$process->isSuccessful()) {
+                    throw new ProcessFailedException($process);
+                }
+                $process = new Process("cd $repo_directory && git commit -m \"Resolves $error on $file_path\"");
+                $process->run();
+                if (!$process->isSuccessful()) {
+                    throw new ProcessFailedException($process);
+                }
+                $process = new Process("cd $repo_directory && git push origin $branch_name");
+                $process->run();
+                if (!$process->isSuccessful()) {
+                    throw new ProcessFailedException($process);
+                }
+
+                // echo $process->getOutput();
 
                 return $this->json($llm_response_data);
                 break;
