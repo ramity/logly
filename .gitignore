@@ -1,0 +1,13 @@
+# Exclude versioning data
+data/*
+
+# Exclude versioning logs
+logs/frontend/*
+logs/backend/*
+
+# Exclude sensitive local files
+docker/backend/.env
+docker/database/.env
+
+# Add exception for .gitkeep files to keep directory structure
+!.gitkeep
