@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+use GitWrapper\GitWrapper;
+
 final class InjestController extends AbstractController
 {
     #[Route('/test', name: 'test', methods: ['GET'])]
@@ -121,14 +123,21 @@ final class InjestController extends AbstractController
                 //   'eval_duration': 4709213000
                 // }
                 $llm_response = $this->httpClient->request('POST', $llm_url, $llm_request);
-        
+
                 // Get the response content
                 $llm_response_data = $llm_response->toArray();
-                return $this->json($llm_response);
-        
-                // Do something with the llm_response
-        
+                $new_source_code = $llm_response_data['response'];
+                file_put_contents($file_path, $new_source_code);
 
+                $branch_name = time();
+                $gitWrapper = new GitWrapper();
+                $git = $gitWrapper->workingCopy($repo_directory);
+                $git->branch($branch_name);
+                $git->add($file_path);
+                $git->commit("Resolves $error on $file_path");
+                $git->push();
+
+                return $this->json($llm_response);
                 break;
 
             case 'resource':
