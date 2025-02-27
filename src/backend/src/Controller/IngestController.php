@@ -9,9 +9,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use GitWrapper\GitWrapper;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
 
 final class IngestController extends AbstractController
 {
+    public function __construct(HttpClientInterface $httpClient)
+    {
+        $this->httpClient = $httpClient;
+    }
+
     #[Route('/test', name: 'test', methods: ['GET'])]
     public function test(): JsonResponse
     {
@@ -37,7 +44,7 @@ final class IngestController extends AbstractController
 
         // Conditionally switch for custom $prompt
         $prompt = '';
-        switch($data->error_type)
+        switch($data['error_type'])
         {
             case 'runtime':
 
@@ -70,19 +77,24 @@ final class IngestController extends AbstractController
                 }
 
                 // Assume the repo is at this specific location for now:
-                $repo_directory = '/example/';
+                $repo_directory = '/example';
+                if (!is_dir($repo_directory)) {
+                    return $this->json('Example repo directory was not found.');;
+                }
 
                 // Get last filename from source parameter
-                $source_bits = explode("/", $source);
-                $source_filename = $source[count($source_bits) - 1];
+                $source_bits = explode('/', $source);
+                $source_filename = $source_bits[count($source_bits) - 1];
 
                 // Does this directory contain a file with the file name specified?
+                $file_path = '';
                 $file_found = false;
-                $directories = array_filter(glob($repo_directory . '*'), 'is_dir');
-                foreach ($directories as $directory)
+                $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($repo_directory));
+                foreach ($iterator as $file)
                 {
-                    if (file_exists($directory . '/' . $source_filename)) {
-                        $file_path = $directory . '/' . $source_filename;
+                    if ($file->isFile() && $file->getFilename() === $source_filename)
+                    {
+                        $file_path = $file->getPathname();
                         $file_found = true;
                         break;
                     }
@@ -92,7 +104,7 @@ final class IngestController extends AbstractController
                 // - In the future, try alternative methods like regex code search, possibly
                 if (!$file_found)
                 {
-                    $this->json('File was not found in example repo.');
+                    return $this->json('File was not found in example repo.' . $source_filename);
                 }
 
                 // Using source, get the complete file
@@ -121,19 +133,20 @@ final class IngestController extends AbstractController
                 //   'eval_count': 290,
                 //   'eval_duration': 4709213000
                 // }
-                $llm_response = $this->httpClient->request('POST', $llm_url, $llm_request);
+                $llm_response = $this->httpClient->request('POST', $llm_url, ['json' => $llm_request, 'timeout' => 600]);
                 $llm_response_data = $llm_response->toArray();
                 $new_source_code = $llm_response_data['response'];
                 file_put_contents($file_path, $new_source_code);
-                $branch_name = time();
-                $gitWrapper = new GitWrapper();
-                $git = $gitWrapper->workingCopy($repo_directory);
-                $git->branch($branch_name);
-                $git->add($file_path);
-                $git->commit("Resolves $error on $file_path");
-                $git->push();
 
-                return $this->json($llm_response);
+                // $branch_name = time();
+                // $gitWrapper = new GitWrapper();
+                // $git = $gitWrapper->workingCopy($repo_directory);
+                // $git->branch($branch_name);
+                // $git->add($file_path);
+                // $git->commit("Resolves $error on $file_path");
+                // $git->push();
+
+                return $this->json($llm_response_data);
                 break;
 
             case 'resource':
@@ -145,8 +158,9 @@ final class IngestController extends AbstractController
             default:
                 return $this->json(['error' => 'Unhandled error_type']);
         }
+        
         // If you want to return a response to the client
-        return $this->json(['message' => 'yippie :3']);
+        // return $this->json(['message' => 'yippie :3']);
 
         // return $this->render('ingest/index.html.twig', [
         //     'controller_name' => 'IngestController',
