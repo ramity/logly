@@ -1,5 +1,6 @@
 # Exclude versioning data
-data/*
+data/database/*
+data/llm/*
 
 # Exclude versioning logs
 logs/frontend/*
