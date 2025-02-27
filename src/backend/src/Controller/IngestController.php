@@ -10,7 +10,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use GitWrapper\GitWrapper;
 
-final class InjestController extends AbstractController
+final class IngestController extends AbstractController
 {
     #[Route('/test', name: 'test', methods: ['GET'])]
     public function test(): JsonResponse
@@ -18,8 +18,8 @@ final class InjestController extends AbstractController
         return $this->json(':3');
     }
 
-    #[Route('/injest', name: 'injest', methods: ['POST'])]
-    public function injest(Request $request): JsonResponse
+    #[Route('/ingest', name: 'ingest', methods: ['POST'])]
+    public function ingest(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
@@ -104,9 +104,8 @@ final class InjestController extends AbstractController
                     // Complete responses only - turn off streaming responses
                     'stream' => false
                 ];
-        
                 $llm_url = 'http://logly_llm:11434/api/generate';
-        
+
                 // Make a POST request using HttpClient
                 // Ex:
                 // {
@@ -123,12 +122,9 @@ final class InjestController extends AbstractController
                 //   'eval_duration': 4709213000
                 // }
                 $llm_response = $this->httpClient->request('POST', $llm_url, $llm_request);
-
-                // Get the response content
                 $llm_response_data = $llm_response->toArray();
                 $new_source_code = $llm_response_data['response'];
                 file_put_contents($file_path, $new_source_code);
-
                 $branch_name = time();
                 $gitWrapper = new GitWrapper();
                 $git = $gitWrapper->workingCopy($repo_directory);
@@ -152,8 +148,8 @@ final class InjestController extends AbstractController
         // If you want to return a response to the client
         return $this->json(['message' => 'yippie :3']);
 
-        // return $this->render('injest/index.html.twig', [
-        //     'controller_name' => 'InjestController',
+        // return $this->render('ingest/index.html.twig', [
+        //     'controller_name' => 'IngestController',
         // ]);
     }
 }
