@@ -1,0 +1,71 @@
+services:
+
+  backend:
+    build:
+      context: ./
+      dockerfile: ./docker/backend/Dockerfile
+    container_name: logly_backend
+    env_file:
+      - ./docker/backend/.env
+    image: logly_backend
+    ports:
+      - 8080:8000
+      - 443:443
+    volumes:
+      - ./src/backend:/logly
+    networks:
+      - logly
+
+  database:
+    build:
+      context: ./
+      dockerfile: ./docker/database/Dockerfile
+    container_name: logly_database
+    env_file:
+      - ./docker/database/.env
+    image: logly_database
+    ports:
+      - 3306:3306
+    volumes:
+      - ./data/database:/var/lib/mysql
+    networks:
+      - logly
+
+  frontend:
+    build:
+      context: ./
+      dockerfile: docker/frontend/Dockerfile
+    container_name: logly_frontend
+    image: logly_frontend
+    volumes:
+      - ./src/frontend:/usr/share/nginx/html:ro
+      - ./logs/frontend:/var/log/nginx
+    ports:
+      - 8000:80
+    networks:
+      - logly
+
+  llm:
+    build:
+      context: ./
+      dockerfile: docker/llm/Dockerfile
+    container_name: logly_llm
+    image: logly_llm
+    ports:
+      - 11434:11434
+    volumes:
+      - ./data/llm:/root/.ollama
+    networks:
+      - logly
+    # Uncomment for support in Nvidia GPU environments
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           capabilities: [gpu]
+    #           count: 1
+
+networks:
+  logly:
+    name: logly
