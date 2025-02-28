@@ -1,4 +1,4 @@
-# Getting Start
+# Getting Started
 
 #### Update env files
 Copy paste .env.dist to .env files in docker dir
