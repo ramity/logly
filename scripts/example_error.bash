@@ -12,10 +12,3 @@ curl -H "Content-type: application/json"\
      -k\
      -X POST\
      http://192.168.1.4:8080/ingest
-
-# Send the POST request and print the response
-RESPONSE=$(curl -L -k -X POST "$URL" \
-    -H "Content-Type: application/json" \
-    -d "$JSON_PAYLOAD")
-
-echo "Response: $RESPONSE"

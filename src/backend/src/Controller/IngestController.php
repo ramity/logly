@@ -158,22 +158,26 @@ final class IngestController extends AbstractController
                 // $git->commit("Resolves $error on $file_path");
                 // $git->push();
 
-                $process = new Process("cd $repo_directory && git branch $branch_name");
+                $process = new Process(["git","checkout","-B","$branch_name"]);
+                $process->setWorkingDirectory("$repo_directory");
                 $process->run();
                 if (!$process->isSuccessful()) {
                     throw new ProcessFailedException($process);
                 }
-                $process = new Process("cd $repo_directory && git add $file_path");
+                $process = new Process(["git","add","$file_path"]);
+                $process->setWorkingDirectory("$repo_directory");
                 $process->run();
                 if (!$process->isSuccessful()) {
                     throw new ProcessFailedException($process);
                 }
-                $process = new Process("cd $repo_directory && git commit -m \"Resolves $error on $file_path\"");
+                $process = new Process(["git","commit","-m","Resolves $error on $file_path"]);
+                $process->setWorkingDirectory("$repo_directory");
                 $process->run();
                 if (!$process->isSuccessful()) {
                     throw new ProcessFailedException($process);
                 }
-                $process = new Process("cd $repo_directory && git push origin $branch_name");
+                $process = new Process(["git","push","origin","$branch_name"]);
+                $process->setWorkingDirectory("$repo_directory");
                 $process->run();
                 if (!$process->isSuccessful()) {
                     throw new ProcessFailedException($process);
