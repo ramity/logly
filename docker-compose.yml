@@ -15,6 +15,7 @@ services:
       - ./src/backend:/logly
       # Add the frontend as an example repo to fix
       - ./src/frontend:/example
+      - ./logs/backend:/root/.symfony5/log
     networks:
       - logly
 
