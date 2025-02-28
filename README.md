@@ -1,21 +1,21 @@
-# Update env files
+# Getting Start
+
+#### Update env files
 Copy paste .env.dist to .env files in docker dir
 
-# Build and start containers
-docker compose up -d
+#### Build and start containers
+`docker compose up -d`
 
-Within logly_backend:
+#### Exec into backend container
+`docker exec -it logly_backend bash`
 
-# Run migrations
-bin/console doctrine:migrate
+#### Run migrations
+`bin/console doctrine:migrate`
 
-# Load fixtures
-bin/console doctrine:fixtures:load
+#### Load fixtures
+`bin/console doctrine:fixtures:load`
 
-# Run server
-symfony server:start --listen-ip=0.0.0.0
-
-# PAT for Clyde - Enable the docker container to act as Clyde
+#### PAT for Clyde - Enable the docker container to act as Clyde
 
 (interactive)
 ```
@@ -30,12 +30,12 @@ Goto https://github.com/settings/tokens and provide 'repo', 'read:org', 'admin:p
 
 Paste the result
 
-# Enable cylde to make suggestions
+#### Enable cylde to make suggestions
 
 - Add feed.js source to your repo
 - Add Clyde as a contributor
 
-# How it works
+#### How it works
 
 Adding the feed.js script allows for it to intercept all errors that are generated on the client.
 These logs are forwarded to a central server which also has a copy of the repo's source code on file.
