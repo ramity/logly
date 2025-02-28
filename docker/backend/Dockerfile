@@ -40,9 +40,9 @@ RUN php composer-setup.php
 RUN php -r "unlink('composer-setup.php');"
 RUN mv composer.phar /usr/local/bin/composer
 
-# Be sure to use --no-git if creating a new project
+# Be sure to use --no-git when creating a new project
 # Example:
-# symfony new logly --version="7.2.x" --webapp --no-gi
+# symfony new logly --version="7.2.x" --webapp --no-git
 # cd logly
 # composer install
 # composer require symfony/orm-pack
@@ -50,4 +50,6 @@ RUN mv composer.phar /usr/local/bin/composer
 
 WORKDIR /logly
 
-ENTRYPOINT sleep infinity
+# ENTRYPOINT sleep infinity
+# For Dev use only
+ENTRYPOINT symfony server:start --listen-ip=0.0.0.0

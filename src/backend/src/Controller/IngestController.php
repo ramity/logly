@@ -110,7 +110,7 @@ final class IngestController extends AbstractController
 
                 // Using source, get the complete file
                 $source_code = file_get_contents($file_path);
-                $prompt = "Generate the code to fix to resolve the javascript runtime error $message in the following code:\n$source_code";
+                $prompt = "Don't explain the code, just generate the code block itself. Responding with the complete code, resolve the runtime error $message in the following code:\n$source_code";
                 $llm_request = [
                     'model' => 'qwen2.5-coder:32b',
                     'prompt' => $prompt,
@@ -136,7 +136,18 @@ final class IngestController extends AbstractController
                 // }
                 $llm_response = $this->httpClient->request('POST', $llm_url, ['json' => $llm_request, 'timeout' => 600]);
                 $llm_response_data = $llm_response->toArray();
-                $new_source_code = $llm_response_data['response'];
+
+                // extract response from within first ```<code>``` and ```language<code>``` block
+                $pattern = '/```.*?\n(.*?)```/s';
+                $result = preg_match($pattern, $llm_response_data['response'], $matches);
+
+                // Validate
+                if ($result == 0)
+                {
+                    throw new Exception("No code found in the provided response.");
+                }
+
+                $new_source_code = $matches[1];
                 file_put_contents($file_path, $new_source_code);
 
                 $branch_name = time();
