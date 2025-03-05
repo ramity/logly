@@ -66,7 +66,7 @@ RUN git config --global user.name "clyde AI"
 RUN git config --global --add safe.directory /example
 
 # Add github to known_hosts
-RUN curl --silent https://api.github.com/meta | jq --raw-output '"github.com "+.ssh_keys[]' >> ~/.ssh/known_hosts
+RUN ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
 # ENTRYPOINT sleep infinity
 
