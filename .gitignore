@@ -9,6 +9,7 @@ logs/backend/*
 # Exclude sensitive local files
 docker/backend/.env
 docker/database/.env
+docker/.env
 
 # Add exception for .gitkeep files to keep directory structure
 !.gitkeep

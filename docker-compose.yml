@@ -6,6 +6,7 @@ services:
       dockerfile: ./docker/backend/Dockerfile
     container_name: logly_backend
     env_file:
+      - ./docker/.env
       - ./docker/backend/.env
     image: logly_backend
     ports:
@@ -53,6 +54,9 @@ services:
       context: ./
       dockerfile: docker/llm/Dockerfile
     container_name: logly_llm
+    env_file:
+      - ./docker/.env
+      - ./docker/llm/.env
     image: logly_llm
     ports:
       - 11434:11434

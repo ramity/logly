@@ -112,7 +112,7 @@ final class IngestController extends AbstractController
                 $source_code = file_get_contents($file_path);
                 $prompt = "Don't explain the code, just generate the code block itself. Responding with the complete code, resolve the runtime error $message in the following code:\n$source_code";
                 $llm_request = [
-                    'model' => 'qwen2.5-coder:32b',
+                    'model' => $_ENV['LOGLY_MODEL'],
                     'prompt' => $prompt,
                     // Complete responses only - turn off streaming responses
                     'stream' => false

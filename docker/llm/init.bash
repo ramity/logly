@@ -1,3 +1,3 @@
 ollama serve &
-ollama pull qwen2.5-coder:32b
+ollama pull $LOGLY_MODEL
 sleep infinity
