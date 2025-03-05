@@ -62,6 +62,12 @@ WORKDIR /logly
 RUN git config --global user.email "clyde@aicodefix.codes"
 RUN git config --global user.name "clyde AI"
 
+# Tempoment stopgap fix due to dubious ownership errors
+RUN git config --global --add safe.directory /example
+
+# Add github to known_hosts
+RUN curl --silent https://api.github.com/meta | jq --raw-output '"github.com "+.ssh_keys[]' >> ~/.ssh/known_hosts
+
 # ENTRYPOINT sleep infinity
 
 # For Dev use only
