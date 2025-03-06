@@ -37,6 +37,9 @@ Copy paste .env.dist to .env files in docker dir
 #### Exec into backend container
 `docker exec -it logly_backend bash`
 
+#### Composer update repo
+`composer update`
+
 #### Run migrations
 `bin/console doctrine:migrate`
 
