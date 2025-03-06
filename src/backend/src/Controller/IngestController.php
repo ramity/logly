@@ -150,6 +150,8 @@ final class IngestController extends AbstractController
                 $new_source_code = $matches[1];
                 file_put_contents($file_path, $new_source_code);
 
+                $body = $llm_response_data['response'];
+
                 $branch_name = time();
                 // $gitWrapper = new GitWrapper();
                 // $git = $gitWrapper->workingCopy($repo_directory);
@@ -188,7 +190,7 @@ final class IngestController extends AbstractController
                 if (!$process->isSuccessful()) {
                     throw new ProcessFailedException($process);
                 }
-                $process = new Process(["gh","pr","create","--title","Corrected $message","--body",nl2br($llm_response_data['response'])]);
+                $process = new Process(["gh","pr","create","--title","Corrected $message","--body","$body"]);
                 $process->setWorkingDirectory("$repo_directory");
                 $process->run();
                 if (!$process->isSuccessful()) {
