@@ -184,13 +184,13 @@ final class IngestController extends AbstractController
                 if (!$process->isSuccessful()) {
                     throw new ProcessFailedException($process);
                 }
-                $process = new Process(["git","checkout","master"]);
+                $process = new Process(["gh","pr","create","--title","Corrected $message","--body","$body"]);
                 $process->setWorkingDirectory("$repo_directory");
                 $process->run();
                 if (!$process->isSuccessful()) {
                     throw new ProcessFailedException($process);
                 }
-                $process = new Process(["gh","pr","create","--title","Corrected $message","--body","$body"]);
+                $process = new Process(["git","checkout","master"]);
                 $process->setWorkingDirectory("$repo_directory");
                 $process->run();
                 if (!$process->isSuccessful()) {
