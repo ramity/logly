@@ -188,8 +188,12 @@ final class IngestController extends AbstractController
                 if (!$process->isSuccessful()) {
                     throw new ProcessFailedException($process);
                 }
-
-                // echo $process->getOutput();
+                $process = new Process(["gh","pr","create","--title","Corrected $message","--body","$llm_response_data['response']"]);
+                $process->setWorkingDirectory("$repo_directory");
+                $process->run();
+                if (!$process->isSuccessful()) {
+                    throw new ProcessFailedException($process);
+                }
 
                 return $this->json($llm_response_data);
                 break;
